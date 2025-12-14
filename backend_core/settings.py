@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-$+1lh+h=gqxi)+7627!i0d8qsa9bh^&al_(j5l(!uuygzt%)ul
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # Updated to allow all hosts for dev/testing. Change for Prod.
 
 
 # Application definition
@@ -38,17 +39,23 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'corsheaders',  # CORS headers
-    'rest_framework',  # Django REST Framework
+    # Third Party Apps
+    'corsheaders',      # CORS headers
+    'rest_framework',   # Django REST Framework
+    'rest_framework_simplejwt', # JWT Auth
 
+    # Local Apps
     'inventory',
     'sold_cars',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # <--- ADD THIS LINE (Must be near top)
+    'corsheaders.middleware.CorsMiddleware',  # Must be near top
 
     'django.middleware.security.SecurityMiddleware',
+
+    "whitenoise.middleware.WhiteNoiseMiddleware", # Static file serving
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -81,14 +88,11 @@ WSGI_APPLICATION = 'backend_core.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cardealer_db',      # Name of your database
-        'USER': 'postgres',          # Your Postgres username
-        'PASSWORD': 'password',      # Your Postgres password
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        # If running locally, use SQLite. If on cloud, use their DB.
+        default='sqlite:///db.sqlite3',
+        conn_max_age=600
+    )
 }
 
 
@@ -128,21 +132,32 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# CRITICAL for WhiteNoise: Where static files are collected
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Enable compression and caching for static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-CORS_ALLOW_ALL_ORIGINS = True
 # CORS CONFIGURATION
+# ------------------------------------------------------------------------------
+# If DEBUG is True, allow all origins. If False, rely on the list below.
+CORS_ALLOW_ALL_ORIGINS = DEBUG
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite default
     "http://localhost:3000",  # Create-React-App default
     "http://127.0.0.1:5173",
 ]
 
-# ... (after your CORS settings)
 
+# REST FRAMEWORK CONFIGURATION
+# ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
