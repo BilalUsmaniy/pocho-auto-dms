@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const SOLD_API = 'http://127.0.0.1:8000/api/sold/records/'
+// ***FIXED URL***
+const SOLD_API = 'https://pocho-backend.onrender.com/api/sold/records/'
 
 export default function SoldCars() {
     const [soldVehicles, setSoldVehicles] = useState([])

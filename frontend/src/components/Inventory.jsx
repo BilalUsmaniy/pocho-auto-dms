@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const API_BASE = 'http://127.0.0.1:8000/api'
-const SOLD_API = 'http://127.0.0.1:8000/api/sold/records/'
+// ***FIXED URLs***
+const API_BASE = 'https://pocho-backend.onrender.com/api'
+const SOLD_API = 'https://pocho-backend.onrender.com/api/sold/records/'
 
 const CAR_MAKES = [
   "Acura", "Alfa Romeo", "Aston Martin", "Audi", "Bentley", "BMW", "Bugatti", "Buick",

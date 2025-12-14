@@ -6,7 +6,8 @@ import {
 } from 'recharts'
 import { DollarSign, Car, TrendingUp, Package, ArrowUpRight, ArrowDownLeft } from 'lucide-react'
 
-const STATS_API = 'http://127.0.0.1:8000/api/sold/stats/'
+// ***FIXED URL***
+const STATS_API = 'https://pocho-backend.onrender.com/api/sold/stats/'
 const COLORS = ['#16a34a', '#eab308', '#dc2626'];
 
 export default function Dashboard() {
