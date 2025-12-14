@@ -11,7 +11,7 @@ export default function Login({ setToken }) {
         e.preventDefault()
         try {
             // 1. Ask Django for a Key Card (Token)
-            const res = await axios.post('http://127.0.0.1:8000/api/token/', {
+            const res = await axios.post('https://pocho-backend.onrender.com/api/token/', {
                 username,
                 password
             })
