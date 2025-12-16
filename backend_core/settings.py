@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 import dj_database_url
 from pathlib import Path
-from datetime import timedelta # <--- ADDED for JWT Lifespan Fix
+from datetime import timedelta # ADDED for JWT Lifespan Fix
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-$+1lh+h=gqxi)+7627!i0d8qsa9bh^&al_(j5l(!uuygzt%)ul
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']  # Updated to allow all hosts for dev/testing. Change for Prod.
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,9 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third Party Apps
-    'corsheaders',      # CORS headers
-    'rest_framework',   # Django REST Framework
-    'rest_framework_simplejwt', # JWT Auth
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt',
 
     # Local Apps
     'inventory',
@@ -51,7 +51,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Must be near top
+    'corsheaders.middleware.CorsMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
 
@@ -92,15 +92,13 @@ DATABASES = {
     'default': dj_database_url.config(
         # If running locally, use SQLite. If on cloud, use their DB.
         default='sqlite:///db.sqlite3',
-        # FIX A: Reduced connection age for Free Tier stability
+        # FIX A: Aggressive connection age (60 seconds) for Free Tier stability
         conn_max_age=60
     )
 }
 
-# FIX A (Part 2): Explicitly close stale connections to prevent connection limit errors
-DATABASES['default']['OPTIONS'] = {
-    'stale_timeout': 60, # Closes an idle connection after 60 seconds
-}
+# NOTE: The problematic DATABASES['default']['OPTIONS'] block has been removed
+# to fix the "invalid connection option" error.
 
 
 # Password validation
@@ -152,8 +150,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Vite default
-    "http://localhost:3000",  # Create-React-App default
+    "http://localhost:5173",
+    "http://localhost:3000",
     "http://127.0.0.1:5173",
 ]
 
